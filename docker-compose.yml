@@ -1,0 +1,59 @@
+services:
+
+  keycloak-app:
+    image: jboss/keycloak:15.0.2
+    container_name: keycloak-app
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/playground-realm.json
+      DB_VENDOR: MARIADB
+      DB_ADDR: keycloak-db
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: keycloak
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./docker/keycloak/imports:/opt/jboss/keycloak/imports
+      - ./docker/keycloak/themes/playground-theme:/opt/jboss/keycloak/themes/playground-theme
+    depends_on:
+      - keycloak-db
+    networks:
+      - keycloak-space
+
+  keycloak-db:
+    image: mariadb:10.5.8
+    container_name: keycloak-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloak
+      LANG: C.UTF-8
+    ports:
+      - '3306:3306'
+    networks:
+      - keycloak-space
+
+  playground-db:
+    image: mariadb:10.5.8
+    container_name: playground-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: playground
+      MYSQL_USER: playground
+      MYSQL_PASSWORD: playground
+      LANG: C.UTF-8
+    volumes:
+      - ./docker/playground/init-playground-db.sql:/docker-entrypoint-initdb.d/init-playground-db.sql
+    ports:
+      - '3307:3306'
+    networks:
+      - playground-space
+
+networks:
+  keycloak-space:
+    name: keycloak-space
+  playground-space:
+    name: playground-space

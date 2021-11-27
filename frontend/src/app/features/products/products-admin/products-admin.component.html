@@ -1,0 +1,19 @@
+<p>Admin</p>
+<div *ngFor="let p of products">
+  <p>----------</p>
+  <p>ID {{p.id}}</p>
+  <p>
+    <label>
+      Name
+      <input>
+    </label>
+  </p>
+  <p>
+    <label>
+      Preis
+      <input>
+    </label>
+  </p>
+  <button (click)="change()">Ändern</button>
+</div>
+<p>----------</p>
